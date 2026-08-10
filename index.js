@@ -12,10 +12,21 @@ const crypto = require("crypto");
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getAuth } = require("firebase-admin/auth");
 
-//const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
+// const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
 
-const decode = Buffer.from(process.env.FB_SERVICE_KEY,'base64').toString('utf8');
+// const decode = Buffer.from(process.env.FB_SERVICE_KEY,'base64').toString('utf8');
+// const serviceAccount = JSON.parse(decode);
+
+const decode = Buffer.from(
+    process.env.FB_SERVICE_KEY,
+    "base64"
+).toString("utf8");
+
 const serviceAccount = JSON.parse(decode);
+
+initializeApp({
+    credential: cert(serviceAccount),
+});
 
 const { assert, count } = require('console');
 const { format } = require('path');
