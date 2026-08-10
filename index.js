@@ -17,6 +17,34 @@ const { getAuth } = require("firebase-admin/auth");
 // const decode = Buffer.from(process.env.FB_SERVICE_KEY,'base64').toString('utf8');
 // const serviceAccount = JSON.parse(decode);
 
+// const decode = Buffer.from(
+//     process.env.FB_SERVICE_KEY,
+//     "base64"
+// ).toString("utf8");
+
+// const serviceAccount = JSON.parse(decode);
+
+// initializeApp({
+//     credential: cert(serviceAccount),
+// });
+
+// const { assert, count } = require('console');
+// const { format } = require('path');
+
+// initializeApp({
+//     credential: cert(serviceAccount),
+// });
+
+// const admin = require("firebase-admin");
+
+// const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
+
+
+
 const decode = Buffer.from(
     process.env.FB_SERVICE_KEY,
     "base64"
@@ -27,22 +55,6 @@ const serviceAccount = JSON.parse(decode);
 initializeApp({
     credential: cert(serviceAccount),
 });
-
-const { assert, count } = require('console');
-const { format } = require('path');
-
-initializeApp({
-    credential: cert(serviceAccount),
-});
-
-// const admin = require("firebase-admin");
-
-// const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-
 function generateTrackingId() {
     const prefix = "PRCL";
     const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
