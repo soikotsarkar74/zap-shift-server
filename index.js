@@ -17,6 +17,11 @@ const serviceAccount = JSON.parse(decoded);
 initializeApp({
     credential: cert(serviceAccount),
 });
+
+
+
+
+
 function generateTrackingId() {
     const prefix = "PRCL";
     const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
