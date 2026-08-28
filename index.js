@@ -7,19 +7,12 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const port = process.env.PORT || 5000
 const crypto = require("crypto");
 
+const admin = require("firebase-admin");
+const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-e057cba39d.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 
-const { initializeApp, cert } = require("firebase-admin/app");
-const { getAuth } = require("firebase-admin/auth");
-
-const decoded = Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
-const serviceAccount = JSON.parse(decoded);
-
-initializeApp({
-    credential: cert(serviceAccount),
 });
-
-
-
 
 
 function generateTrackingId() {
@@ -32,7 +25,9 @@ function generateTrackingId() {
 
 // middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [ 'http://localhost:5173','https://your-frontend.vercel.app']
+}))
 const verifyFBToken = async (req, res, next) => {
     const token = req.headers.authorization;
     if (!token) {
@@ -40,9 +35,9 @@ const verifyFBToken = async (req, res, next) => {
     }
     try {
         const idToken = token.split(' ')[1];
-        const decoded = await getAuth().verifyIdToken(idToken);
-        // const decoded = await admin.auth().verifyFBToken(idToken);
-        //const decoded = await Admin.auth().verifyIdToken(idToken);
+        
+         const decoded = await admin.auth().verifyIdToken(idToken);
+       
         console.log('decoded token', decoded);
         req.decoded_email = decoded.email;
         next();
@@ -87,6 +82,8 @@ async function run() {
             }
             next();
         }
+
+   
     const logTracking = async (trackingId, status) => {
             const log = {
                 trackingId,
@@ -785,7 +782,7 @@ app.patch('/riders/cashout/:id', async (req, res) => {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('zap is shifting shifting!')
+    res.send('zap is shifting shifting')
 })
 
 app.listen(port, () => {
@@ -793,110 +790,150 @@ app.listen(port, () => {
 });
 
 
+// const express = require('express');
+// const cors = require('cors');
+// const app = express();
+// require('dotenv').config();
+// const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// const stripe = require('stripe')(process.env.STRIPE_SECRET);
+// const port = process.env.PORT || 5000;
+// const crypto = require("crypto");
+
+// const admin = require("firebase-admin");
+
+// let serviceAccount;
+// try {
+   
+//     serviceAccount = require("./zap-shift-19f46-firebase-adminsdk.json");
+//     console.log('✅ Using local JSON file for Firebase');
+// } catch (error) {
+    
+//     console.log('✅ Using Base64 encoded service account from Vercel');
+    
+//     const base64String = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+//     if (!base64String) {
+//         console.error('❌ FIREBASE_SERVICE_ACCOUNT_BASE64 not found in environment');
+//         process.exit(1);
+//     }
+    
+//     const jsonString = Buffer.from(base64String, 'base64').toString('utf8');
+//     serviceAccount = JSON.parse(jsonString);
+// }
+
+// try {
+//     admin.initializeApp({
+//         credential: admin.credential.cert(serviceAccount)
+//     });
+//     console.log('✅ Firebase initialized successfully!');
+// } catch (error) {
+//     console.error('❌ Firebase initialization failed:', error.message);
+// }
+
+// app.use(cors());
+// app.use(express.json());
+
+// const verifyFBToken = async (req, res, next) => {
+//   const token = req.headers.authorization;
+//   if (!token) {
+//     return res.status(401).send({ message: 'Unauthorized access' });
+//   }
+//   try {
+//     const idToken = token.split(' ')[1]
+//     const decoded = await admin.auth().verifyIdToken(idToken);
+//     req.decoded_email = decoded.email;
+//     console.log('✅ Token verified for:', decoded.email);
+//     next();
+//   } catch (err) {
+//     console.error('❌ Token verification error:', err.message);
+//     return res.status(401).send({ message: 'Unauthorized access token' });
+//   }
+// };
 
 
 // const express = require('express');
 // const cors = require('cors');
-// require('dotenv').config();
-// const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-// const stripe = require('stripe')(process.env.STRIPE_SECRET);
-// const crypto = require("crypto");
-
-// const { initializeApp, cert } = require("firebase-admin/app");
-// const { getAuth } = require("firebase-admin/auth");
-
-// const app = express();
-// const port = process.env.PORT || 5000;
-
-// const serviceAccount = JSON.parse(
-//     Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
-// );
-
-// initializeApp({
-//     credential: cert(serviceAccount),
-// });
-
-
-// const express = require("express");
-// const cors = require("cors");
-// const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-// require("dotenv").config();
-// const stripe = require("stripe")(process.env.STRIPE_SECRET);
-// const crypto = require("crypto");
-
-// const admin = require("firebase-admin");
-// const decoded = Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
-// const serviceAccount = JSON.parse(decoded);
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-
-// const app = express();
-// const port = process.env.PORT || 5000;
-
-
-
-
-
-
-// const decode = Buffer.from( process.env.FB_SERVICE_KEY,"base64").toString("utf8");
-// const serviceAccount = JSON.parse(decode);
-
-
-// const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
-
-// const decode = Buffer.from(process.env.FB_SERVICE_KEY,'base64').toString('utf8');
-// const serviceAccount = JSON.parse(decode);
-
-// const decode = Buffer.from(
-//     process.env.FB_SERVICE_KEY,
-//     "base64"
-// ).toString("utf8");
-
-// const serviceAccount = JSON.parse(decode);
-
-// initializeApp({
-//     credential: cert(serviceAccount),
-// });
-
-// const { assert, count } = require('console');
-// const { format } = require('path');
-
-// initializeApp({
-//     credential: cert(serviceAccount),
-// });
-
-// const admin = require("firebase-admin");
-
-// const serviceAccount = require("./zap-shift-d0725-firebase-adminsdk-fbsvc-ba1bd978fe.json");
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-
-
-
-// const express = require('express')
-// const cors = require('cors');
 // const app = express();
 // require('dotenv').config();
 // const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET);
-// const port = process.env.PORT || 5000
+// const port = process.env.PORT || 5000;
 // const crypto = require("crypto");
-// const { initializeApp, cert } = require("firebase-admin/app");
-// const { getAuth } = require("firebase-admin/auth");
-// const decoded = Buffer.from(process.env.FB_SERVICE_KEY, 'base64').toString('utf8')
-// const serviceAccount = JSON.parse(decoded);
 
-// initializeApp({
-//     credential: cert(serviceAccount),
-// });
 
+
+// const admin = require("firebase-admin");
+// let serviceAccount;
+// let firebaseInitialized = false;
+
+// try {
+   
+//     const base64String = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    
+//     if (base64String) {
+       
+//         const jsonString = Buffer.from(base64String, 'base64').toString('utf8');
+//         serviceAccount = JSON.parse(jsonString);
+//     } else {
+        
+     
+//         serviceAccount = require("./zap-shift-19f46-firebase-adminsdk.json");
+//     }
+    
+//     admin.initializeApp({
+//         credential: admin.credential.cert(serviceAccount)
+//     });
+//     firebaseInitialized = true;
+
+// } catch (error) {
+//     console.error('❌ Firebase initialization failed:', error.message);
+  
+// }
 
 // app.use(cors());
 // app.use(express.json());
+
+// // ============================================
+// // VERIFY FB TOKEN - FIREBASE INITIALIZED CHECK
+// // ============================================
+// const verifyFBToken = async (req, res, next) => {
+//     if (!firebaseInitialized) {
+//         return res.status(503).send({ 
+//             message: 'Firebase service unavailable',
+//             error: 'Firebase not initialized'
+//         });
+//     }
+    
+//     const token = req.headers.authorization;
+//     if (!token) {
+//         return res.status(401).send({ message: 'Unauthorized access' });
+//     }
+//     try {
+//         const idToken = token.split(' ')[1];
+//         const decoded = await admin.auth().verifyIdToken(idToken);
+//         req.decoded_email = decoded.email;
+//         console.log('✅ Token verified for:', decoded.email);
+//         next();
+//     } catch (err) {
+//         console.error('❌ Token verification error:', err.message);
+//         return res.status(401).send({ message: 'Unauthorized access token' });
+//     }
+// };
+
+
+
+// // ============================================
+// // VERIFY ADMIN MIDDLEWARE
+// // ============================================
+// const verifyAdmin = async (req, res, next) => {
+//   const email = req.decoded_email;
+//   const query = { email };
+//   const user = await userCollection.findOne(query);
+//   if (!user || user.role !== 'admin') {
+//     return res.status(403).send({ message: 'Forbidden access' });
+//   }
+//   next();
+// };
+
 // function generateTrackingId() {
 //     const prefix = "PRCL";
 //     const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -905,26 +942,7 @@ app.listen(port, () => {
 //     return `${prefix}-${date}-${random}`;
 // }
 
-
-// const verifyFBToken = async (req, res, next) => {
-//     const token = req.headers.authorization;
-//     if (!token) {
-//         return res.status(401).send({ message: 'unauthorize access' })
-//     }
-//     try {
-//         const idToken = token.split(' ')[1];
-//         const decoded = await getAuth().verifyIdToken(idToken);
-//         // const decoded = await admin.auth().verifyFBToken(idToken);
-//         //const decoded = await Admin.auth().verifyIdToken(idToken);
-//         console.log('decoded token', decoded);
-//         req.decoded_email = decoded.email;
-//         next();
-//     }
-//     catch (err) {
-//         return res.status(401).send({ message: 'unauthorize access token' })
-//     }
-
-// }
+ 
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6lmq5wd.mongodb.net/?appName=Cluster0`;
 // // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -949,17 +967,6 @@ app.listen(port, () => {
 //         const ridersCollection = db.collection('riders');
 //         const trackingsCollection = db.collection('trackings');
 
-
-//         //middle more with database access  
-//         const verifyAdmin = async(req,res,next)=>{
-//             const email = req.decoded_email;
-//             const query = {email};
-//             const user = await userCollection.findOne(query);
-//             if(!user || user.role !== 'admin'){
-//                  return res.status(403).send({message:'Forbidden access'})
-//             }
-//             next();
-//         }
 //     const logTracking = async (trackingId, status) => {
 //             const log = {
 //                 trackingId,
@@ -1643,10 +1650,6 @@ app.listen(port, () => {
 //             res.send(result);
 //         })
 
-
-
-
-
 //         // Send a ping to confirm a successful connection
 //        // await client.db("admin").command({ ping: 1 });
 //         //console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -1664,4 +1667,5 @@ app.listen(port, () => {
 // app.listen(port, () => {
 //     console.log(`Example app listening on port ${port}`)
 // });
+
 
